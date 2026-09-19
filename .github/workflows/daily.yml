@@ -15,6 +15,9 @@ jobs:
       contents: write
     env:
       TZ: Asia/Shanghai
+      # 定时触发按交易日判断（节假日正常提示休市）；
+      # push/手动触发一律 FORCE_RUN，方便周末验证完整流程
+      FORCE_RUN: ${{ github.event_name == 'schedule' && '0' || '1' }}
       PUSH_KEY: ${{ secrets.PUSH_KEY }}
       PUSH_CHANNEL: ${{ secrets.PUSH_CHANNEL }}
       REPORT_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
