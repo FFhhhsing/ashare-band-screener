@@ -1,0 +1,8 @@
+# 报告产物走 gh-pages 分支发布，不必提交到 main
+output/
+__pycache__/
+*.pyc
+.DS_Store
+
+# 观察池状态必须提交，其余临时文件不要
+state/*.tmp
