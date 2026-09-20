@@ -1083,61 +1083,95 @@ def push_summary(payload):
 
 
 INDUSTRY_FILE = os.path.join(STATE_DIR, "industry_map.json")
-INDUSTRY_MAX_AGE_DAYS = 7   # 缓存超过此天数才重新拉取
+# 实时抓取用的东财接口（push2delay 在墙外/云端通常可达；失败也不影响静态底表）
+_INDUSTRY_FS = "m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81,m:1+t:33"
+_INDUSTRY_HOST = "push2delay.eastmoney.com"
+_INDUSTRY_UT = "fa5fd1943c7b386f172d6893dbfba10b"
+
+
+def _fetch_industry_live():
+    """实时拉全市场「代码 -> 所属行业」(东财 push2delay, f100=所属行业)。失败抛异常。"""
+    import ssl
+    import urllib.parse
+    import urllib.request
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    m, pn, pz = {}, 1, 100   # push2delay 单页上限 100，逐页翻到底
+    while True:
+        params = {
+            "pn": str(pn), "pz": str(pz), "po": "1", "np": "1", "ut": _INDUSTRY_UT,
+            "fltt": "2", "invt": "2", "fid": "f3", "fs": _INDUSTRY_FS,
+            "fields": "f12,f100",
+        }
+        url = "https://%s/api/qt/clist/get?%s" % (_INDUSTRY_HOST, urllib.parse.urlencode(params))
+        req = urllib.request.Request(
+            url, headers={"User-Agent": "Mozilla/5.0", "Referer": "https://quote.eastmoney.com/"}
+        )
+        with urllib.request.urlopen(req, timeout=10, context=ctx) as r:
+            data = json.loads(r.read().decode("utf-8"))
+        items = (data.get("data") or {}).get("diff") or []
+        if not items:
+            break
+        for it in items:
+            code = str(it.get("f12") or "").strip()
+            ind = it.get("f100")
+            if code:
+                code = code.zfill(6)
+                if isinstance(ind, str) and ind.strip() and ind.strip() != "-":
+                    m[code] = ind.strip()
+        if len(items) < pz:
+            break
+        pn += 1
+    if not m:
+        raise ValueError("实时行业数据为空")
+    return m
 
 
 def load_industry():
-    """返回 {code(6位): 行业名}。优先读本地缓存（state/industry_map.json，随仓库提交可跨环境复用），
-    缓存缺失或超龄时实时拉东方财富全市场快照（含'所属行业'列）刷新并写回；
-    全部失败则降级为空 dict（报告里行业显示 '—'）。"""
-    # 1) 读缓存
-    cached = None
+    """返回 {code(6位): 行业名}。
+
+    设计：**静态底表优先**。
+    随仓库提交的 state/industry_map.json 已覆盖全部沪深 A 股（由 build_industry_map.py
+    用东财 push2delay 一次性生成），云端直接读取、无需联网，彻底避免行业显示 '-'。
+    实时抓取仅作为「补充新上市股票」的可选增强：只向底表里追加缺失项，
+    绝不覆盖/删除已有映射；联网失败时静默回退到静态底表。
+    """
+    base = {}
     if os.path.exists(INDUSTRY_FILE):
         try:
-            age = (time.time() - os.path.getmtime(INDUSTRY_FILE)) / 86400
-            if age < INDUSTRY_MAX_AGE_DAYS:
-                with open(INDUSTRY_FILE, encoding="utf-8") as f:
-                    cached = json.load(f)
-                log(f"行业映射读缓存：{len(cached)} 只（{age:.1f} 天前）")
-                return cached
-            else:
-                with open(INDUSTRY_FILE, encoding="utf-8") as f:
-                    cached = json.load(f)  # 超龄但暂留作降级备用
-        except Exception:
-            cached = None
-    # 2) 实时拉取
-    try:
-        df = ak.stock_zh_a_spot_em()
-        if df is None or len(df) == 0:
-            raise ValueError("空数据")
-        cols = df.columns.tolist()
-        code_col = "代码" if "代码" in cols else cols[0]
-        ind_col = "所属行业" if "所属行业" in cols else None
-        if ind_col is None:
-            raise ValueError("无所属行业列")
-        m = {}
-        for _, r in df.iterrows():
-            c = str(r[code_col]).strip().zfill(6)
-            v = r[ind_col]
-            if isinstance(v, str) and v.strip():
-                m[c] = v.strip()
-        # 3) 写缓存（云端会随观察池一起提交回仓库，实现跨环境复用）
-        try:
-            os.makedirs(STATE_DIR, exist_ok=True)
-            tmp = INDUSTRY_FILE + ".tmp"
-            with open(tmp, "w", encoding="utf-8") as f:
-                json.dump(m, f, ensure_ascii=False)
-            os.replace(tmp, INDUSTRY_FILE)
-            log(f"行业映射已刷新并写缓存：{len(m)} 只")
+            with open(INDUSTRY_FILE, encoding="utf-8") as f:
+                base = json.load(f) or {}
+            log(f"行业底表已加载：{len(base)} 只")
         except Exception as e:
-            log(f"行业缓存写入失败（不影响本次）：{e}")
-        return m
+            log(f"行业底表读取失败：{e}")
+    if base:
+        # 可选：实时补充底表缺失项（仅追加，不覆盖）
+        try:
+            live = _fetch_industry_live()
+            merged = dict(base)
+            for k, v in live.items():
+                if k not in merged:
+                    merged[k] = v
+            if len(merged) > len(base):
+                try:
+                    os.makedirs(STATE_DIR, exist_ok=True)
+                    tmp = INDUSTRY_FILE + ".tmp"
+                    with open(tmp, "w", encoding="utf-8") as f:
+                        json.dump(merged, f, ensure_ascii=False, sort_keys=True)
+                    os.replace(tmp, INDUSTRY_FILE)
+                    log(f"行业底表已用实时数据扩充至 {len(merged)} 只")
+                except Exception as e:
+                    log(f"行业底表写回失败（不影响使用）：{e}")
+            return merged
+        except Exception as e:
+            log(f"行业实时补充失败，沿用静态底表：{e}")
+            return base
+    # 底表缺失：尝试实时拉全量兜底
+    try:
+        return _fetch_industry_live()
     except Exception as e:
-        log(f"行业映射实时加载失败：{e}")
-        # 4) 降级：用（可能超龄的）旧缓存，实在没有再返回空
-        if cached:
-            log(f"使用旧缓存行业映射（超龄）：{len(cached)} 只")
-            return cached
+        log(f"行业映射加载失败：{e}")
         return {}
 
 
