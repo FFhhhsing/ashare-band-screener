@@ -42,15 +42,16 @@ jobs:
 
       # 观察池必须回写仓库，否则每次 Actions 都是全新 checkout，
       # 观察池会被清零，回访区永远出不来
-      - name: 保存观察池状态
+      - name: 保存观察池与行业缓存
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -f state/watchlist.json
+          if [ -f state/industry_map.json ]; then git add -f state/industry_map.json; fi
           if git diff --cached --quiet; then
-            echo "观察池无变化，跳过提交"
+            echo "观察池/行业缓存无变化，跳过提交"
           else
-            git commit -m "chore: 更新观察池 $(date +%F) [skip ci]"
+            git commit -m "chore: 更新观察池/行业缓存 $(date +%F) [skip ci]"
             git push
           fi
 

@@ -611,6 +611,7 @@ def run():
     wl_today = {}            # 观察池个股当日快照，用于破位判定
     spot_idx = spot.set_index(spot["code"].astype(str).str.zfill(6))
     name_map = dict(zip(cand["code"].astype(str).str.zfill(6), cand["name"].astype(str)))
+    ind_map = load_industry()
 
     def name_of(code):
         return name_map.get(code) or wl.get(code, {}).get("name") or code
@@ -650,6 +651,7 @@ def run():
         rec = {
             "code": code,
             "name": name_of(code),
+            "industry": ind_map.get(code, "—"),
             "bp": bp,
             "why": why,
             "close": round(float(cur["close"]), 2),
@@ -805,6 +807,7 @@ h1{font-size:20px;font-weight:600;margin-bottom:4px}
 .up{color:#d32f2f}.dn{color:#388e3c}
 .sc{margin-left:auto;font-size:12px;background:#E6F1FB;color:#0C447C;padding:2px 10px;border-radius:10px}
 .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:8px;margin:10px 0;font-size:12px}
+.kv .ind{grid-column:1/-1;background:#f5f8ff;border-radius:6px;padding:6px 8px;font-weight:600;color:#1a3a6b}
 .kv div{background:#fafafa;border-radius:6px;padding:6px 8px}
 .kv span{color:#999;display:block;font-size:11px}
 .why{font-size:13px;background:#FFF9E6;border-left:3px solid #EF9F27;padding:8px 10px;border-radius:4px;margin:8px 0}
@@ -829,6 +832,7 @@ CARD_TPL = """<div class="card">
 <span class="__CLS__">__PRICE__ (__PCT__)</span><span class="sc">评分 __SCORE__</span></div>
 __RV__
 <div class="kv">
+<div class="ind"><span>行业</span>__IND__</div>
 <div><span>换手率</span>__TURN__%</div><div><span>PE(动)</span>__PE__</div>
 <div><span>PE分位</span>__PEPCT__</div><div><span>PB</span>__PB__</div>
 <div><span>流通市值</span>__MV__亿</div><div><span>MA5</span>__MA5__</div>
@@ -869,6 +873,7 @@ def build_html(payload):
                 .replace("__PRICE__", fmt(r["close"])).replace("__PCT__", pct)
                 .replace("__SCORE__", str(r["score"]))
                 .replace("__RV__", rv_html)
+                .replace("__IND__", (r.get("industry") or "—"))
                 .replace("__TURN__", fmt(r["turn"])).replace("__PE__", fmt(r["pe"]))
                 .replace("__PB__", fmt(r["pb"])).replace("__MV__", fmt(r["float_mv"]))
                 .replace("__MA5__", fmt(r["ma5"])).replace("__MA20__", fmt(r["ma20"]))
@@ -933,11 +938,12 @@ def build_html(payload):
                         f'<td class="{cls}">{fmt(r["close"])}（{pct}）</td>'
                         f'<td>{r["score"]}</td><td>{fmt(r["pe"])}</td>'
                         f'<td>{fmt(r["bias20"])}%</td>'
+                        f'<td>{r.get("industry", "—")}</td>'
                         f'<td class="w">{r["why"][:38]}</td></tr>')
                 body_parts.append(
                     '<table class="alt"><tr><th>代码</th><th>名称</th>'
                     '<th>现价(涨跌)</th><th>评分</th><th>PE</th><th>乖离</th>'
-                    '<th>要点</th></tr>' + "".join(rows) + "</table>")
+                    '<th>行业</th><th>要点</th></tr>' + "".join(rows) + "</table>")
             else:
                 body_parts.append('<div class="empty">今日无符合条件的标的</div>')
             continue
@@ -964,13 +970,14 @@ def build_html(payload):
                     f'<td class="{cls}">{fmt(r["close"])}（{pct}）</td>'
                     f'<td>{r["score"]}</td><td>{fmt(r["pe"])}</td>'
                     f'<td>{fmt(r["bias20"])}%</td>'
+                    f'<td>{r.get("industry", "—")}</td>'
                     f'<td class="w">{r["why"][:38]}</td></tr>')
             body_parts.append(
                 f'<div class="sec" style="font-size:13px;border-left-color:#bbb;'
                 f'margin:14px 0 8px">备选 · 第 {TOP_N_BY_BP[bp]+1}—'
                 f'{TOP_N_BY_BP[bp]+len(alt)} 名</div>'
                 '<table class="alt"><tr><th>代码</th><th>名称</th><th>现价(涨跌)</th>'
-                '<th>评分</th><th>PE</th><th>乖离</th><th>要点</th></tr>'
+                '<th>评分</th><th>PE</th><th>乖离</th><th>行业</th><th>要点</th></tr>'
                 + "".join(rows) + "</table>")
 
     # 回访区（L2）
@@ -1033,11 +1040,11 @@ def push_summary(payload):
             any_hit = True
             n = min(len(full), TOP_N_BY_BP[3])
             lines.append(f"### {names[bp]}（共命中 {hits} 只，以下 {n} 只简表）")
-            lines.append("| 代码 | 名称 | 现价 | 涨跌 | 评分 |")
-            lines.append("| --- | --- | --- | --- | --- |")
+            lines.append("| 代码 | 名称 | 现价 | 涨跌 | 评分 | 行业 |")
+            lines.append("| --- | --- | --- | --- | --- | --- |")
             for r in full[:TOP_N_BY_BP[3]]:
                 pct = "—" if r["pct"] is None else f"{r['pct']:+.2f}%"
-                lines.append(f"| {r['code']} | {r['name']} | {r['close']} | {pct} | {r['score']} |")
+                lines.append(f"| {r['code']} | {r['name']} | {r['close']} | {pct} | {r['score']} | {r.get('industry', '—')} |")
             lines.append("")
             continue
         lst = payload["results"].get(str(bp), [])[:TOP_N_BY_BP[bp]]
@@ -1046,11 +1053,11 @@ def push_summary(payload):
             continue
         any_hit = True
         lines.append(f"### {names[bp]}（共命中 {hits} 只，展示前 {len(lst)}）")
-        lines.append("| 代码 | 名称 | 现价 | 涨跌 | 评分 |")
-        lines.append("| --- | --- | --- | --- | --- |")
+        lines.append("| 代码 | 名称 | 现价 | 涨跌 | 评分 | 行业 |")
+        lines.append("| --- | --- | --- | --- | --- | --- |")
         for r in lst:
             pct = "—" if r["pct"] is None else f"{r['pct']:+.2f}%"
-            lines.append(f"| {r['code']} | {r['name']} | {r['close']} | {pct} | {r['score']} |")
+            lines.append(f"| {r['code']} | {r['name']} | {r['close']} | {pct} | {r['score']} | {r.get('industry', '—')} |")
         lines.append("")
     if not any_hit:
         lines.append("今日三类买点均无符合条件的标的。")
@@ -1073,6 +1080,65 @@ def push_summary(payload):
         lines.append(f"[点击查看完整报告与K线图]({base})")
     title = f"波段买点 {payload['date'][5:]} · 共{payload['total']}只"
     push(title, "\n".join(lines))
+
+
+INDUSTRY_FILE = os.path.join(STATE_DIR, "industry_map.json")
+INDUSTRY_MAX_AGE_DAYS = 7   # 缓存超过此天数才重新拉取
+
+
+def load_industry():
+    """返回 {code(6位): 行业名}。优先读本地缓存（state/industry_map.json，随仓库提交可跨环境复用），
+    缓存缺失或超龄时实时拉东方财富全市场快照（含'所属行业'列）刷新并写回；
+    全部失败则降级为空 dict（报告里行业显示 '—'）。"""
+    # 1) 读缓存
+    cached = None
+    if os.path.exists(INDUSTRY_FILE):
+        try:
+            age = (time.time() - os.path.getmtime(INDUSTRY_FILE)) / 86400
+            if age < INDUSTRY_MAX_AGE_DAYS:
+                with open(INDUSTRY_FILE, encoding="utf-8") as f:
+                    cached = json.load(f)
+                log(f"行业映射读缓存：{len(cached)} 只（{age:.1f} 天前）")
+                return cached
+            else:
+                with open(INDUSTRY_FILE, encoding="utf-8") as f:
+                    cached = json.load(f)  # 超龄但暂留作降级备用
+        except Exception:
+            cached = None
+    # 2) 实时拉取
+    try:
+        df = ak.stock_zh_a_spot_em()
+        if df is None or len(df) == 0:
+            raise ValueError("空数据")
+        cols = df.columns.tolist()
+        code_col = "代码" if "代码" in cols else cols[0]
+        ind_col = "所属行业" if "所属行业" in cols else None
+        if ind_col is None:
+            raise ValueError("无所属行业列")
+        m = {}
+        for _, r in df.iterrows():
+            c = str(r[code_col]).strip().zfill(6)
+            v = r[ind_col]
+            if isinstance(v, str) and v.strip():
+                m[c] = v.strip()
+        # 3) 写缓存（云端会随观察池一起提交回仓库，实现跨环境复用）
+        try:
+            os.makedirs(STATE_DIR, exist_ok=True)
+            tmp = INDUSTRY_FILE + ".tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(m, f, ensure_ascii=False)
+            os.replace(tmp, INDUSTRY_FILE)
+            log(f"行业映射已刷新并写缓存：{len(m)} 只")
+        except Exception as e:
+            log(f"行业缓存写入失败（不影响本次）：{e}")
+        return m
+    except Exception as e:
+        log(f"行业映射实时加载失败：{e}")
+        # 4) 降级：用（可能超龄的）旧缓存，实在没有再返回空
+        if cached:
+            log(f"使用旧缓存行业映射（超龄）：{len(cached)} 只")
+            return cached
+        return {}
 
 
 if __name__ == "__main__":
