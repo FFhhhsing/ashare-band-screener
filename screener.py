@@ -33,7 +33,7 @@ CHART_DAYS = 60                  # 绘图展示天数
 MAX_WORKERS = 8                  # 并发拉历史数据的线程数
 # 每类买点在报告中展示的股票数：买点1/2 各 15 只，买点3 只展示最强的 3 只
 # （买点3 是破线拉回，属于趋势后段、假信号最多，故收紧展示名额）
-TOP_N_BY_BP = {1: 15, 2: 15, 3: 3}
+TOP_N_BY_BP = {1: 15, 2: 15, 3: 15}
 TOP_SAVE = 40                    # 每类买点写入 JSON 的股票数（便于事后核对完整命中）
 MAX_CODES = int(os.environ.get("MAX_CODES", "0"))   # >0 时只处理前 N 只，用于本地调试
 # 亏损股处理（方案B·分层）：又亏又贵的一刀剔除，跌透的只扣分不剥夺资格
@@ -916,6 +916,31 @@ def build_html(payload):
 
     for bp in (1, 2, 3):
         full = payload["results"].get(str(bp), [])
+        if bp == 3:
+            # 买点3 全部用简表展示，不再单列带 K 线的卡片
+            hits = payload.get("hits", {}).get(str(bp), len(full))
+            body_parts.append(
+                f'<div class="sec">{titles[bp]} · 共命中 {hits} 只，'
+                f'以下 {min(len(full), TOP_N_BY_BP[3])} 只简表</div>')
+            alt = full[:TOP_N_BY_BP[3]]
+            if alt:
+                rows = []
+                for r in alt:
+                    cls = "dn" if (r["pct"] or 0) < 0 else "up"
+                    pct = "—" if r["pct"] is None else f"{r['pct']:+.2f}%"
+                    rows.append(
+                        f'<tr><td>{r["code"]}</td><td>{r["name"]}</td>'
+                        f'<td class="{cls}">{fmt(r["close"])}（{pct}）</td>'
+                        f'<td>{r["score"]}</td><td>{fmt(r["pe"])}</td>'
+                        f'<td>{fmt(r["bias20"])}%</td>'
+                        f'<td class="w">{r["why"][:38]}</td></tr>')
+                body_parts.append(
+                    '<table class="alt"><tr><th>代码</th><th>名称</th>'
+                    '<th>现价(涨跌)</th><th>评分</th><th>PE</th><th>乖离</th>'
+                    '<th>要点</th></tr>' + "".join(rows) + "</table>")
+            else:
+                body_parts.append('<div class="empty">今日无符合条件的标的</div>')
+            continue
         lst = full[:TOP_N_BY_BP[bp]]
         hits = payload.get("hits", {}).get(str(bp), len(lst))
         tail = f" · 展示 {len(lst)} 只" + (f"（共命中 {hits} 只）" if hits > len(lst) else "")
@@ -1000,6 +1025,21 @@ def push_summary(payload):
     names = {1: "买点1 突破转势", 2: "买点2 回踩不破", 3: "买点3 破线拉回"}
     any_hit = False
     for bp in (1, 2, 3):
+        full = payload["results"].get(str(bp), [])
+        hits = payload.get("hits", {}).get(str(bp), len(full))
+        if bp == 3:
+            if not full:
+                continue
+            any_hit = True
+            n = min(len(full), TOP_N_BY_BP[3])
+            lines.append(f"### {names[bp]}（共命中 {hits} 只，以下 {n} 只简表）")
+            lines.append("| 代码 | 名称 | 现价 | 涨跌 | 评分 |")
+            lines.append("| --- | --- | --- | --- | --- |")
+            for r in full[:TOP_N_BY_BP[3]]:
+                pct = "—" if r["pct"] is None else f"{r['pct']:+.2f}%"
+                lines.append(f"| {r['code']} | {r['name']} | {r['close']} | {pct} | {r['score']} |")
+            lines.append("")
+            continue
         lst = payload["results"].get(str(bp), [])[:TOP_N_BY_BP[bp]]
         hits = payload.get("hits", {}).get(str(bp), len(lst))
         if not lst:
