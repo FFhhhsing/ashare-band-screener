@@ -13,6 +13,20 @@
   "last_date": "2026-09-18",
   "name": "华金资本"
  },
+ "000905": {
+  "first_bp": 3,
+  "first_close": 9.4,
+  "first_date": "2026-09-18",
+  "last_date": "2026-09-18",
+  "name": "厦门港务"
+ },
+ "300129": {
+  "first_bp": 3,
+  "first_close": 7.71,
+  "first_date": "2026-09-18",
+  "last_date": "2026-09-18",
+  "name": "泰胜风能"
+ },
  "300145": {
   "first_bp": 2,
   "first_close": 4.87,
@@ -41,6 +55,20 @@
   "last_date": "2026-09-18",
   "name": "赢合科技"
  },
+ "300475": {
+  "first_bp": 3,
+  "first_close": 174.32,
+  "first_date": "2026-09-18",
+  "last_date": "2026-09-18",
+  "name": "香农芯创"
+ },
+ "300676": {
+  "first_bp": 3,
+  "first_close": 39.7,
+  "first_date": "2026-09-18",
+  "last_date": "2026-09-18",
+  "name": "华大基因"
+ },
  "300708": {
   "first_bp": 2,
   "first_close": 8.75,
@@ -62,6 +90,13 @@
   "last_date": "2026-09-18",
   "name": "矩子科技"
  },
+ "300863": {
+  "first_bp": 3,
+  "first_close": 44.04,
+  "first_date": "2026-09-18",
+  "last_date": "2026-09-18",
+  "name": "卡倍亿"
+ },
  "300951": {
   "first_bp": 2,
   "first_close": 93.15,
@@ -82,6 +117,13 @@
   "first_date": "2026-09-18",
   "last_date": "2026-09-18",
   "name": "金禄电子"
+ },
+ "301305": {
+  "first_bp": 3,
+  "first_close": 25.98,
+  "first_date": "2026-09-18",
+  "last_date": "2026-09-18",
+  "name": "朗坤科技"
  },
  "301373": {
   "first_bp": 2,
@@ -111,12 +153,33 @@
   "last_date": "2026-09-18",
   "name": "恒丰纸业"
  },
+ "600577": {
+  "first_bp": 3,
+  "first_close": 8.72,
+  "first_date": "2026-09-18",
+  "last_date": "2026-09-18",
+  "name": "精达股份"
+ },
+ "600621": {
+  "first_bp": 3,
+  "first_close": 14.1,
+  "first_date": "2026-09-18",
+  "last_date": "2026-09-18",
+  "name": "华鑫股份"
+ },
  "600630": {
   "first_bp": 1,
   "first_close": 8.29,
   "first_date": "2026-09-18",
   "last_date": "2026-09-18",
   "name": "龙头股份"
+ },
+ "600640": {
+  "first_bp": 3,
+  "first_close": 12.06,
+  "first_date": "2026-09-18",
+  "last_date": "2026-09-18",
+  "name": "国脉文化"
  },
  "600644": {
   "first_bp": 2,
@@ -167,6 +230,13 @@
   "last_date": "2026-09-18",
   "name": "金帝股份"
  },
+ "603439": {
+  "first_bp": 3,
+  "first_close": 13.6,
+  "first_date": "2026-09-18",
+  "last_date": "2026-09-18",
+  "name": "三力制药"
+ },
  "603613": {
   "first_bp": 1,
   "first_close": 21.27,
@@ -202,12 +272,26 @@
   "last_date": "2026-09-18",
   "name": "成都先导"
  },
+ "688300": {
+  "first_bp": 3,
+  "first_close": 176.8,
+  "first_date": "2026-09-18",
+  "last_date": "2026-09-18",
+  "name": "联瑞新材"
+ },
  "688536": {
   "first_bp": 1,
   "first_close": 353.2,
   "first_date": "2026-09-18",
   "last_date": "2026-09-18",
   "name": "思瑞浦"
+ },
+ "688591": {
+  "first_bp": 3,
+  "first_close": 30.19,
+  "first_date": "2026-09-18",
+  "last_date": "2026-09-18",
+  "name": "泰凌微"
  },
  "688690": {
   "first_bp": 1,
