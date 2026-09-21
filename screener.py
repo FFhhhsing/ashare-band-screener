@@ -83,6 +83,30 @@ def resolve_date():
     return fallback
 
 
+def infer_data_date(hist):
+    """从已拉取的日线反推「真实数据日期」：取出现次数最多的最后一根 K 线日期。
+
+    为什么必须这样做：resolve_date() 依赖新浪交易日历，云端经常拿不到而回退成"今天"；
+    但数据商当天的日线要收盘后一段时间才发布，此刻日线实际最新只到上一交易日。
+    若继续用"今天"标注，就会出现「报告标题写 9/21、内容却是 9/18 数据」的错位，
+    而且历史日线(上一交易日)与实时快照(当日)日期不一致，评分会混用两个日期导致排名漂移。
+    """
+    from collections import Counter
+    c = Counter()
+    for df in hist.values():
+        try:
+            if df is None or len(df) == 0:
+                continue
+            last = str(df["date"].iloc[-1]).replace("-", "").strip()
+            if len(last) == 8 and last.isdigit():
+                c[last] += 1
+        except Exception:
+            continue
+    if not c:
+        return None
+    return c.most_common(1)[0][0]
+
+
 def is_trading_day():
     """返回 True/False；无法判断时返回 None（按交易日处理并警告）"""
     try:
@@ -605,6 +629,18 @@ def run():
     hist = fetch_all(codes, start, end)
     log(f"成功 {len(hist)} 只")
 
+    # 用真实日线反推数据日期并覆盖日历猜测值，避免「标题今天、内容上一交易日」
+    stale = False
+    real_ymd = infer_data_date(hist)
+    if real_ymd:
+        real_disp = f"{real_ymd[:4]}-{real_ymd[4:6]}-{real_ymd[6:]}"
+        if real_ymd != ymd:
+            stale = True
+            log(f"警告：日历/当天为 {day}，但日线实际最新只到 {real_disp}"
+                f"（当日日线尚未发布），报告改按真实数据日期标注")
+        ymd, day = real_ymd, real_disp
+        log(f"真实数据日期 {day}")
+
     log("=== 计算指标并判定买点 ===")
     results = {1: [], 2: [], 3: []}
     excluded = []            # 方案B 硬剔除（又亏又贵）
@@ -765,7 +801,12 @@ def run():
     save_watchlist(wl)
     log(f"观察池新增 {added} 只，当前共 {len(wl)} 只 -> {STATE_DIR}/watchlist.json")
 
+    stale_html = ""
+    if stale:
+        stale_html = (' <span style="color:#c0392b;font-weight:600">'
+                      f'⚠ 数据滞后：日线最新仅到 {day}</span>')
     payload = {"date": day, "total": total,
+               "stale_html": stale_html,
                "hits": {str(k): v for k, v in hits_all.items()},
                "results": {str(k): v for k, v in payload_save.items()},
                "revisit": revisit,
@@ -822,7 +863,7 @@ table.alt td.w{white-space:normal;color:#777;font-size:11px}
 .foot{margin-top:28px;padding:14px;background:#FFF4F4;border-radius:10px;font-size:12px;color:#A32D2D}
 </style></head><body><div class="wrap">
 <h1>A股波段买点筛选</h1>
-<div class="meta">__DATE__ 收盘后筛选 · 数据源 AkShare/东方财富 · 共命中 __TOTAL__ 只</div>
+<div class="meta">数据日期 __DATE__ · 收盘后筛选__STALE__ · 数据源 AkShare/腾讯/东方财富 · 共命中 __TOTAL__ 只</div>
 __BODY__
 <div class="foot">本报告由程序自动抓取公开行情数据并按既定技术规则生成，仅供技术研究参考，不构成任何投资建议或个股推荐。股市有风险，投资需谨慎。</div>
 </div><script>__JS__</script></body></html>"""
@@ -993,6 +1034,7 @@ def build_html(payload):
             js_parts.append(js)
 
     html = (HTML_TPL.replace("__DATE__", payload["date"])
+            .replace("__STALE__", payload.get("stale_html", ""))
             .replace("__TOTAL__", str(payload["total"]))
             .replace("__BODY__", "".join(body_parts))
             .replace("__JS__", "\n".join(js_parts)))
