@@ -87,14 +87,14 @@
   "first_bp": 2,
   "first_close": 12.8,
   "first_date": "2026-11-20",
-  "last_date": "2026-11-20",
+  "last_date": "2026-11-27",
   "name": "岳阳兴长"
  },
  "000888": {
   "first_bp": 2,
   "first_close": 10.23,
   "first_date": "2026-11-05",
-  "last_date": "2026-11-23",
+  "last_date": "2026-11-27",
   "name": "峨眉山Ａ"
  },
  "001201": {
@@ -104,12 +104,19 @@
   "last_date": "2026-11-26",
   "name": "东瑞股份"
  },
- "001328": {
+ "001232": {
+  "first_bp": 3,
+  "first_close": 175.01,
+  "first_date": "2026-11-27",
+  "last_date": "2026-11-27",
+  "name": "嘉立创"
+ },
+ "002026": {
   "first_bp": 1,
-  "first_close": 33.71,
-  "first_date": "2026-10-26",
-  "last_date": "2026-11-24",
-  "name": "登康口腔"
+  "first_close": 11.94,
+  "first_date": "2026-11-27",
+  "last_date": "2026-11-27",
+  "name": "山东威达"
  },
  "002027": {
   "first_bp": 1,
@@ -117,6 +124,27 @@
   "first_date": "2026-11-02",
   "last_date": "2026-11-02",
   "name": "分众传媒"
+ },
+ "002077": {
+  "first_bp": 1,
+  "first_close": 14.07,
+  "first_date": "2026-11-27",
+  "last_date": "2026-11-27",
+  "name": "大港股份"
+ },
+ "002122": {
+  "first_bp": 1,
+  "first_close": 4.18,
+  "first_date": "2026-11-27",
+  "last_date": "2026-11-27",
+  "name": "汇洲智能"
+ },
+ "002226": {
+  "first_bp": 1,
+  "first_close": 5.89,
+  "first_date": "2026-11-27",
+  "last_date": "2026-11-27",
+  "name": "江南化工"
  },
  "002293": {
   "first_bp": 1,
@@ -132,11 +160,18 @@
   "last_date": "2026-11-17",
   "name": "漫步者"
  },
+ "002651": {
+  "first_bp": 1,
+  "first_close": 9.56,
+  "first_date": "2026-11-27",
+  "last_date": "2026-11-27",
+  "name": "利君股份"
+ },
  "002739": {
   "first_bp": 3,
   "first_close": 8.84,
   "first_date": "2026-11-02",
-  "last_date": "2026-11-02",
+  "last_date": "2026-11-27",
   "name": "儒意电影"
  },
  "002983": {
@@ -174,6 +209,13 @@
   "last_date": "2026-11-26",
   "name": "博腾股份"
  },
+ "300416": {
+  "first_bp": 3,
+  "first_close": 14.61,
+  "first_date": "2026-11-27",
+  "last_date": "2026-11-27",
+  "name": "苏试试验"
+ },
  "300504": {
   "first_bp": 3,
   "first_close": 17.11,
@@ -195,12 +237,26 @@
   "last_date": "2026-11-24",
   "name": "横河精密"
  },
+ "300693": {
+  "first_bp": 3,
+  "first_close": 32.0,
+  "first_date": "2026-11-27",
+  "last_date": "2026-11-27",
+  "name": "盛弘股份"
+ },
  "300703": {
   "first_bp": 1,
   "first_close": 17.8,
   "first_date": "2026-11-25",
-  "last_date": "2026-11-25",
+  "last_date": "2026-11-27",
   "name": "创源股份"
+ },
+ "300759": {
+  "first_bp": 3,
+  "first_close": 45.4,
+  "first_date": "2026-11-27",
+  "last_date": "2026-11-27",
+  "name": "康龙化成"
  },
  "300770": {
   "first_bp": 2,
@@ -223,13 +279,6 @@
   "last_date": "2026-11-26",
   "name": "松原安全"
  },
- "300910": {
-  "first_bp": 3,
-  "first_close": 22.68,
-  "first_date": "2026-11-26",
-  "last_date": "2026-11-26",
-  "name": "瑞丰新材"
- },
  "301000": {
   "first_bp": 2,
   "first_close": 28.09,
@@ -241,7 +290,7 @@
   "first_bp": 3,
   "first_close": 38.91,
   "first_date": "2026-11-24",
-  "last_date": "2026-11-24",
+  "last_date": "2026-11-27",
   "name": "明月镜片"
  },
  "301168": {
@@ -260,9 +309,9 @@
  },
  "301219": {
   "first_bp": 3,
-  "first_close": 31.6,
-  "first_date": "2026-11-26",
-  "last_date": "2026-11-26",
+  "first_close": 34.2,
+  "first_date": "2026-11-27",
+  "last_date": "2026-11-27",
   "name": "腾远钴业"
  },
  "301256": {
@@ -328,19 +377,12 @@
   "last_date": "2026-11-23",
   "name": "雅戈尔"
  },
- "600186": {
-  "first_bp": 3,
-  "first_close": 8.74,
-  "first_date": "2026-11-26",
-  "last_date": "2026-11-26",
-  "name": "莲花控股"
- },
- "600223": {
-  "first_bp": 3,
-  "first_close": 5.49,
-  "first_date": "2026-11-25",
-  "last_date": "2026-11-25",
-  "name": "福瑞达"
+ "600185": {
+  "first_bp": 1,
+  "first_close": 4.89,
+  "first_date": "2026-11-27",
+  "last_date": "2026-11-27",
+  "name": "珠免集团"
  },
  "600258": {
   "first_bp": 1,
@@ -353,7 +395,7 @@
   "first_bp": 1,
   "first_close": 22.56,
   "first_date": "2026-11-02",
-  "last_date": "2026-11-18",
+  "last_date": "2026-11-27",
   "name": "羚锐制药"
  },
  "600312": {
@@ -362,13 +404,6 @@
   "first_date": "2026-11-24",
   "last_date": "2026-11-24",
   "name": "平高电气"
- },
- "600360": {
-  "first_bp": 3,
-  "first_close": 8.71,
-  "first_date": "2026-11-26",
-  "last_date": "2026-11-26",
-  "name": "华微电子"
  },
  "600398": {
   "first_bp": 1,
@@ -395,7 +430,7 @@
   "first_bp": 1,
   "first_close": 12.73,
   "first_date": "2026-11-26",
-  "last_date": "2026-11-26",
+  "last_date": "2026-11-27",
   "name": "科达制造"
  },
  "600511": {
@@ -404,6 +439,13 @@
   "first_date": "2026-11-03",
   "last_date": "2026-11-03",
   "name": "国药股份"
+ },
+ "600563": {
+  "first_bp": 3,
+  "first_close": 114.69,
+  "first_date": "2026-11-27",
+  "last_date": "2026-11-27",
+  "name": "法拉电子"
  },
  "600600": {
   "first_bp": 1,
@@ -437,7 +479,7 @@
   "first_bp": 1,
   "first_close": 9.19,
   "first_date": "2026-11-26",
-  "last_date": "2026-11-26",
+  "last_date": "2026-11-27",
   "name": "杭州解百"
  },
  "600863": {
@@ -446,6 +488,13 @@
   "first_date": "2026-11-19",
   "last_date": "2026-11-19",
   "name": "华能蒙电"
+ },
+ "600930": {
+  "first_bp": 3,
+  "first_close": 4.07,
+  "first_date": "2026-11-27",
+  "last_date": "2026-11-27",
+  "name": "华电新能"
  },
  "600939": {
   "first_bp": 1,
@@ -544,20 +593,6 @@
   "first_date": "2026-10-29",
   "last_date": "2026-10-29",
   "name": "广州酒家"
- },
- "603109": {
-  "first_bp": 3,
-  "first_close": 15.25,
-  "first_date": "2026-11-26",
-  "last_date": "2026-11-26",
-  "name": "神驰机电"
- },
- "603118": {
-  "first_bp": 3,
-  "first_close": 13.26,
-  "first_date": "2026-11-26",
-  "last_date": "2026-11-26",
-  "name": "共进股份"
  },
  "603170": {
   "first_bp": 1,
@@ -671,6 +706,13 @@
   "last_date": "2026-11-20",
   "name": "东方环宇"
  },
+ "603799": {
+  "first_bp": 3,
+  "first_close": 32.68,
+  "first_date": "2026-11-27",
+  "last_date": "2026-11-27",
+  "name": "华友钴业"
+ },
  "603855": {
   "first_bp": 1,
   "first_close": 17.84,
@@ -699,12 +741,12 @@
   "last_date": "2026-11-23",
   "name": "好莱客"
  },
- "603920": {
+ "603931": {
   "first_bp": 3,
-  "first_close": 34.82,
-  "first_date": "2026-11-26",
-  "last_date": "2026-11-26",
-  "name": "世运电路"
+  "first_close": 30.46,
+  "first_date": "2026-11-27",
+  "last_date": "2026-11-27",
+  "name": "格林达"
  },
  "603960": {
   "first_bp": 1,
@@ -741,32 +783,18 @@
   "last_date": "2026-11-24",
   "name": "乐鑫科技"
  },
- "688037": {
-  "first_bp": 3,
-  "first_close": 229.5,
-  "first_date": "2026-11-26",
-  "last_date": "2026-11-26",
-  "name": "芯源微"
- },
- "688069": {
-  "first_bp": 3,
-  "first_close": 25.63,
-  "first_date": "2026-11-26",
-  "last_date": "2026-11-26",
-  "name": "德林海"
- },
  "688169": {
   "first_bp": 1,
   "first_close": 129.99,
   "first_date": "2026-11-03",
-  "last_date": "2026-11-26",
+  "last_date": "2026-11-27",
   "name": "石头科技"
  },
  "688235": {
   "first_bp": 3,
   "first_close": 274.0,
   "first_date": "2026-11-26",
-  "last_date": "2026-11-26",
+  "last_date": "2026-11-27",
   "name": "百济神州"
  },
  "688347": {
@@ -775,13 +803,6 @@
   "first_date": "2026-11-26",
   "last_date": "2026-11-26",
   "name": "华虹宏力"
- },
- "688617": {
-  "first_bp": 1,
-  "first_close": 278.83,
-  "first_date": "2026-10-26",
-  "last_date": "2026-10-26",
-  "name": "惠泰医疗"
  },
  "688696": {
   "first_bp": 2,
@@ -801,7 +822,7 @@
   "first_bp": 2,
   "first_close": 108.52,
   "first_date": "2026-11-19",
-  "last_date": "2026-11-19",
+  "last_date": "2026-11-27",
   "name": "影石创新"
  }
 }
